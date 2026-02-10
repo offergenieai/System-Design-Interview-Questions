@@ -1,0 +1,35 @@
+name: Update Daily Questions
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # Every day at 8:00 UTC
+  workflow_dispatch:       # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Update README
+        run: |
+          echo "Updating questions for $(date +%Y-%m-%d)"
+          # This will be replaced with actual update logic
+          # For now, just update the timestamp
+          sed -i "s/Last updated:.*/Last updated: $(date +'%b %d, %Y')/" README.md
+
+      - name: Commit and push
+        run: |
+          git config user.name "OfferGenie Bot"
+          git config user.email "bot@offergenie.ai"
+          git add -A
+          git diff --staged --quiet || git commit -m "update: questions for $(date +%Y-%m-%d)"
+          git push
